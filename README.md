@@ -6,14 +6,14 @@ Welcome to the Journey Builder UI project! This application provides a user inte
 
 ## Table of Contents
 
-1.  [Prerequisites](#prerequisites)
-2.  [Running Locally](#running-locally)
+1.  [Prerequisites](#1-prerequisites)
+2.  [Running Locally](#2-running-locally)
     * [Mock Server Setup](#mock-server-setup)
     * [React App Setup](#react-app-setup)
-3.  [Project Structure](#project-structure)
-4.  [Extending with New Data Sources](#extending-with-new-data-sources)
-5.  [Architectural Patterns & Concepts](#architectural-patterns--concepts)
-6.  [Troubleshooting](#troubleshooting)
+3.  [Project Structure](#3-project-structure)
+4.  [Extending with New Data Sources](#4-extending-with-new-data-sources)
+5.  [Architectural Patterns & Concepts](#5-architectural-patterns--concepts)
+6.  [Troubleshooting](#6-troubleshooting)
 
 ---
 
