@@ -9,7 +9,6 @@ export interface Field {
     id: string; // This should be the key from field_schema.properties
     name: string; // This can be field_schema.properties[key].title or the key itself
     type?: string; // e.g., field_schema.properties[key].avantos_type
-    // Add any other relevant properties from field_schema
 }
 
 export interface Form {
@@ -17,7 +16,12 @@ export interface Form {
     name: string;
     description?: string;
     fields: Field[]; // Derived from field_schema
-    // Add other properties from the form object in graph.json if needed
+}
+
+export interface JourneyNodeInfo {
+    id: string; // Unique ID for the list key, can be node.id or node.data.component_key
+    name: string; // Display name, e.g., "Form A" (from node.data.name)
+    formDefinitionId: string; // The ID of the form definition this node uses (from node.data.component_id)
 }
 
 export interface NodeData {
@@ -66,9 +70,9 @@ export interface DataSource {
     id: string;
     name: string;
     getOptions: (
-        currentForm: Form,
-        allForms: Form[],
-        nodes: GraphNode[],
-        edges: GraphEdge[]
+        selectedGraphNodeId: string,
+        allFormDefinitions: Form[],
+        allGraphNodes: GraphNode[],
+        allGraphEdges: GraphEdge[]
     ) => Promise<FieldOption[]>;
 }

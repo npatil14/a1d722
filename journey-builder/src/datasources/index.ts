@@ -28,24 +28,23 @@ export class DirectDependencyProvider implements DataSource {
     name = 'Direct Dependencies';
 
     async getOptions(
-        currentForm: Form,
-        allForms: Form[], // form definitions
-        nodes: GraphNode[], // graph nodes
-        edges: GraphEdge[]
+        selectedGraphNodeId: string,
+        allFormDefinitions: Form[],
+        allGraphNodes: GraphNode[],
+        allGraphEdges: GraphEdge[]
     ): Promise<FieldOption[]> {
-        const currentNode = nodes.find(n => n.data.component_id === currentForm.id);
+        const currentNode = allGraphNodes.find(n => n.id === selectedGraphNodeId); // Use selectedGraphNodeId
         if (!currentNode) {
-            console.warn(`Current graph node not found for formId: ${currentForm.id}`);
+            console.warn(`DirectDependencyProvider: Current graph node not found for id: ${selectedGraphNodeId}`);
             return [];
         }
 
-        const directDepNodes = getDirectDependencies(currentNode.data.component_key, nodes, edges);
+        const directDepNodes = getDirectDependencies(currentNode.id, allGraphNodes, allGraphEdges); // Use currentNode.id
 
         let options: FieldOption[] = [];
         directDepNodes.forEach(depNode => {
-            options = options.concat(getFieldsFromDependentNode(depNode, allForms, 'direct'));
+            options = options.concat(getFieldsFromDependentNode(depNode, allFormDefinitions, 'direct'));
         });
-
         return options;
     }
 }
@@ -55,26 +54,26 @@ export class TransitiveDependencyProvider implements DataSource {
     name = 'Transitive Dependencies (Excluding Direct)';
 
     async getOptions(
-        currentForm: Form,
-        allForms: Form[],
-        nodes: GraphNode[],
-        edges: GraphEdge[]
+        selectedGraphNodeId: string,
+        allFormDefinitions: Form[],
+        allGraphNodes: GraphNode[],
+        allGraphEdges: GraphEdge[]
     ): Promise<FieldOption[]> {
-        const currentNode = nodes.find(n => n.data.component_id === currentForm.id);
+        const currentNode = allGraphNodes.find(n => n.id === selectedGraphNodeId);
         if (!currentNode) {
-            console.warn(`Current graph node not found for formId: ${currentForm.id} in TransitiveProvider`);
+            console.warn(`TransitiveDependencyProvider: Current graph node not found for id: ${selectedGraphNodeId}`);
             return [];
         }
 
-        const allTransitiveDepNodes = getTransitiveDependencies(currentNode.data.component_key, nodes, edges);
+        const allTransitiveDepNodes = getTransitiveDependencies(currentNode.id, allGraphNodes, allGraphEdges); // Use currentNode.id
         const directDepKeys = new Set(
-            getDirectDependencies(currentNode.data.component_key, nodes, edges).map(n => n.data.component_key)
+            getDirectDependencies(currentNode.id, allGraphNodes, allGraphEdges).map(n => n.id) // Use node.id for keys
         );
 
         let options: FieldOption[] = [];
         allTransitiveDepNodes.forEach(depNode => {
-            if (!directDepKeys.has(depNode.data.component_key)) {
-                options = options.concat(getFieldsFromDependentNode(depNode, allForms, 'transitive'));
+            if (!directDepKeys.has(depNode.id)) { // Use node.id for checking
+                options = options.concat(getFieldsFromDependentNode(depNode, allFormDefinitions, 'transitive'));
             }
         });
         return options;
@@ -92,13 +91,13 @@ export class GlobalDataProvider implements DataSource {
     ];
 
     async getOptions(
-        _currentForm: Form,
-        _allForms: Form[],
-        _nodes: GraphNode[],
-        _edges: GraphEdge[]
+        _selectedGraphNodeId: string,
+        _allFormDefinitions: Form[],
+        _allGraphNodes: GraphNode[],
+        _allGraphEdges: GraphEdge[]
     ): Promise<FieldOption[]> {
         return this.globalProperties.map(prop => ({
-            id: prop.id, // Global IDs are inherently unique
+            id: prop.id, // Global IDs are inherently unique by design here
             name: prop.name,
             sourceName: 'Global Data',
             sourceType: 'global',

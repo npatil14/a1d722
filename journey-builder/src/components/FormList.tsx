@@ -1,27 +1,27 @@
 import React from 'react';
-import type { Form } from '../types';
+import type { JourneyNodeInfo } from '../types';
 import './FormList.css';
 
 interface FormListProps {
-    forms: Form[];
-    onSelectForm: (form: Form) => void;
-    selectedFormId?: string | null;
+    journeyNodes: JourneyNodeInfo[];
+    onSelectJourneyNode: (nodeInfo: JourneyNodeInfo) => void;
+    selectedJourneyNodeId?: string | null;
 }
 
-const FormList: React.FC<FormListProps> = ({ forms, onSelectForm, selectedFormId }) => (
+const FormList: React.FC<FormListProps> = ({ journeyNodes, onSelectJourneyNode, selectedJourneyNodeId }) => (
     <div className="form-list-container">
         <h2 className="form-list-title">Forms</h2>
-        {forms.length === 0 && <p className="form-list-empty">No forms loaded.</p>}
+        {journeyNodes.length === 0 && <p className="form-list-empty">No journey steps loaded.</p>}
         <ul className="form-list-ul">
-            {forms.map((form, index) => (
-                <li key={form.id} className="form-list-item-wrapper">
+            {journeyNodes.map((nodeInfo, index) => (
+                <li key={nodeInfo.id} className="form-list-item-wrapper"> {/* Use nodeInfo.id for key */}
                     <button
-                        onClick={() => onSelectForm(form)}
-                        className={`form-list-item-button ${selectedFormId === form.id ? 'selected' : ''}`}
-                        title={`Select form: ${form.name}`}
+                        onClick={() => onSelectJourneyNode(nodeInfo)}
+                        className={`form-list-item-button ${selectedJourneyNodeId === nodeInfo.id ? 'selected' : ''}`}
+                        title={`Select step: ${nodeInfo.name}`}
                     >
                         <span className="form-item-index">{index + 1}.</span>
-                        <span className="form-name-text">{form.name}</span>
+                        <span className="form-name-text">{nodeInfo.name}</span>
                     </button>
                 </li>
             ))}

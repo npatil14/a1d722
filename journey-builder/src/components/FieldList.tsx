@@ -5,6 +5,7 @@ import './FieldList.css';
 
 interface FieldListProps {
     form: Form;
+    selectedJourneyNodeId: string;
     allForms: Form[];
     nodes: GraphNode[];
     edges: GraphEdge[];
@@ -18,6 +19,7 @@ interface FieldListProps {
 
 const FieldList: React.FC<FieldListProps> = ({
     form,
+    selectedJourneyNodeId,
     allForms,
     nodes,
     edges,
@@ -31,7 +33,7 @@ const FieldList: React.FC<FieldListProps> = ({
     };
 
     const handleClearPrefill = (e: React.MouseEvent, fieldId: string) => {
-        e.stopPropagation(); // Prevent opening modal when clearing
+        e.stopPropagation();
         onUpdatePrefill(form.id, fieldId, null);
     };
 
@@ -42,7 +44,7 @@ const FieldList: React.FC<FieldListProps> = ({
         sourceType: 'direct' | 'transitive' | 'global'
     ) => {
         onUpdatePrefill(form.id, targetFieldId, { sourceFieldId, sourceFieldName, sourceType });
-        setSelectedFieldForModal(null); // Close modal on save
+        setSelectedFieldForModal(null);
     };
 
     return (
@@ -81,13 +83,14 @@ const FieldList: React.FC<FieldListProps> = ({
             {selectedFieldForModal && (
                 <PrefillModal
                     targetField={selectedFieldForModal}
-                    currentForm={form}
+                    currentForm={form} // This is the form definition
+                    selectedJourneyNodeId={selectedJourneyNodeId}
                     allForms={allForms}
                     nodes={nodes}
                     edges={edges}
                     currentPrefill={prefillConfigs[selectedFieldForModal.id] || null}
                     onClose={() => setSelectedFieldForModal(null)}
-                    onSavePrefill={handleSavePrefill}
+                    onSavePrefill={handleSavePrefill} // handleSavePrefill uses form.id (definition id)
                 />
             )}
         </div>

@@ -6,10 +6,11 @@ import './PrefillModal.css';
 
 interface PrefillModalProps {
     targetField: Field;
-    currentForm: Form;
-    allForms: Form[];
-    nodes: GraphNode[];
-    edges: GraphEdge[];
+    currentForm: Form; // This is the form definition
+    selectedJourneyNodeId: string; // ID of the actual graph node instance
+    allForms: Form[]; // All form definitions
+    nodes: GraphNode[]; // All graph nodes
+    edges: GraphEdge[]; // All graph edges
     currentPrefill: PrefillConfig | null;
     onClose: () => void;
     onSavePrefill: (
@@ -32,6 +33,7 @@ if (typeof window !== 'undefined') {
 const PrefillModal: React.FC<PrefillModalProps> = ({
     targetField,
     currentForm,
+    selectedJourneyNodeId,
     allForms,
     nodes,
     edges,
@@ -53,13 +55,18 @@ const PrefillModal: React.FC<PrefillModalProps> = ({
             const initialExpansionState: Record<string, boolean> = {};
             for (const dataSource of availableDataSources) {
                 try {
-                    const opts = await dataSource.getOptions(currentForm, allForms, nodes, edges);
+                    const opts = await dataSource.getOptions(
+                        selectedJourneyNodeId,
+                        allForms,
+                        nodes,
+                        edges
+                    );
                     if (opts.length > 0) {
                         allOptions[dataSource.name] = opts;
-                        initialExpansionState[dataSource.name] = true; // Default to expanded
+                        initialExpansionState[dataSource.name] = true;
                     }
                 } catch (error) {
-                    console.error(`Error fetching options from ${dataSource.name}:`, error);
+                    console.error(`Error fetching options from ${dataSource.name} for node ${selectedJourneyNodeId}:`, error);
                 }
             }
             setOptionsBySource(allOptions);
@@ -67,10 +74,10 @@ const PrefillModal: React.FC<PrefillModalProps> = ({
             setIsLoading(false);
         };
 
-        if (currentForm) {
+        if (selectedJourneyNodeId) {
             fetchOptions();
         }
-    }, [currentForm, allForms, nodes, edges]);
+    }, [selectedJourneyNodeId, allForms, nodes, edges, currentForm]);
 
     const handleSave = () => {
         if (selectedOptionId) {
